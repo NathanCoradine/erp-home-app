@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ERP-Home</title>
+<meta name="theme-color" content="#1F4D3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<script>window.ERP_API = "https://script.google.com/macros/s/AKfycbw3ojF-EEC4VHe-XAOjmtbCtAan-bAHaZvcct06nItZ7w1RUmEffivIa44Xcy7pSq55JQ/exec";</script>
+<style>
+:root{
+  --papel:#F7F2E8;--cartao:#FFFDF8;--tinta:#22302A;--suave:#66736C;--linha:#E2DACA;
+  --verde:#1F4D3A;--verde2:#DDE9E1;--terra:#B8502A;--terra2:#F6E1D6;--ouro:#8A6410;--ouro2:#F5E9C8;
+  --r:14px;--seg:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--papel);color:var(--tinta);font:16px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0;letter-spacing:-.01em}
+#app{max-width:680px;margin:0 auto;padding:18px 16px calc(92px + var(--seg))}
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:16px}
+.topo h1{font-size:28px;line-height:1.15}
+.topo small{color:var(--suave);white-space:nowrap}
+.sec{display:flex;justify-content:space-between;align-items:center;margin:22px 0 8px}
+.sec h2{font-size:18px}
+.cartao{background:var(--cartao);border:1px solid var(--linha);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.pad{padding:14px}
+.linha{display:flex;gap:12px;align-items:center;width:100%;padding:13px 14px;background:none;border:0;border-top:1px solid var(--linha);text-align:left;min-height:56px}
+.cartao>.linha:first-child,.cartao>.dia+.linha{border-top:0}
+button.linha{cursor:pointer}
+button.linha:hover{background:#FBF7EE}
+.cresce{flex:1;min-width:0}
+.titulo{font-weight:600;overflow-wrap:anywhere}
+.sub{color:var(--suave);font-size:14px}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.grande{font:600 26px Georgia,serif;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:600;background:var(--verde2);color:var(--verde);white-space:nowrap}
+.chip.alerta{background:var(--terra2);color:var(--terra)}
+.chip.aviso{background:var(--ouro2);color:var(--ouro)}
+.chip.neutro{background:#ECE6D9;color:var(--suave)}
+.btn{border:1px solid var(--verde);background:var(--verde);color:#fff;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;min-height:42px}
+.btn.claro{background:transparent;color:var(--verde)}
+.btn.perigo{background:transparent;color:var(--terra);border-color:var(--terra)}
+.btn.mini{min-height:36px;padding:5px 11px;font-size:14px}
+.btn.total{width:100%}
+.btn:disabled{opacity:.5}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--cartao);border:1px solid var(--linha);border-radius:var(--r);padding:13px 14px;text-align:left;cursor:pointer}
+.kpi b{display:block;font:600 22px Georgia,serif;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--suave);font-size:14px}
+.kpi.ruim b{color:var(--terra)}
+.dia{font-weight:600;padding:11px 14px;background:#F1EADC;font-size:14.5px}
+.dia.hoje{background:var(--verde);color:#fff}
+.vazio{padding:14px;color:var(--suave);font-size:14.5px}
+.busca{width:100%;padding:11px 13px;border:1px solid var(--linha);border-radius:11px;background:var(--cartao);margin-bottom:10px}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:9px}
+.chips button{border:1px solid var(--linha);background:var(--cartao);border-radius:99px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+.chips button.on{background:var(--verde);border-color:var(--verde);color:#fff}
+.nota{background:var(--ouro2);color:#5F4509;border-radius:11px;padding:10px 13px;font-size:14.5px;margin-bottom:10px}
+.dados{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--linha)}
+.dados div{background:var(--cartao);padding:10px 13px}
+.dados b{display:block;font-variant-numeric:tabular-nums}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--cartao);border-top:1px solid var(--linha);padding-bottom:var(--seg);z-index:5}
+nav div{display:flex;max-width:680px;margin:0 auto}
+nav button{flex:1;border:0;background:none;padding:8px 1px 7px;font-size:11.5px;color:var(--suave);cursor:pointer;min-height:58px}
+nav svg{display:block;width:23px;height:23px;margin:0 auto 2px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--verde);font-weight:700}
+#fundo{position:fixed;inset:0;background:rgba(25,32,28,.45);z-index:9;display:none}
+#fundo.on{display:block}
+#folha{position:fixed;left:0;right:0;bottom:0;max-height:90vh;overflow:auto;background:var(--papel);border-radius:18px 18px 0 0;padding:16px 16px calc(20px + var(--seg));max-width:680px;margin:0 auto}
+.folhatopo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.folhatopo h3{font-size:20px}
+.fechar{border:0;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--suave);padding:4px 8px;min-width:40px;min-height:40px}
+label.campo{display:block;margin-bottom:11px;font-size:14px;color:var(--suave)}
+label.campo input,label.campo select,label.campo textarea{display:block;width:100%;margin-top:3px;padding:10px 11px;border:1px solid var(--linha);border-radius:10px;background:var(--cartao);color:var(--tinta);font-size:16px}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acoes{display:flex;gap:9px;margin-top:6px;flex-wrap:wrap}
+.acoes .btn{flex:1}
+.passo{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 14px}
+.passo button{width:44px;height:44px;border-radius:50%;border:1px solid var(--verde);background:none;color:var(--verde);font-size:22px;cursor:pointer}
+.passo b{font:600 26px Georgia,serif;min-width:44px;text-align:center}
+.fl{display:grid;grid-template-columns:1fr 74px 96px 34px;gap:6px;margin-bottom:7px;align-items:center}
+.fl select,.fl input,.cl select,.cl input{width:100%;padding:9px 7px;border:1px solid var(--linha);border-radius:9px;background:var(--cartao);font-size:15px}
+.fl button{border:0;background:none;color:var(--terra);font-size:20px;cursor:pointer}
+.cl{background:var(--cartao);border:1px solid var(--linha);border-radius:11px;padding:10px;margin-bottom:8px}
+.cl.off{opacity:.5}
+.cl .topo2{display:flex;gap:8px;align-items:flex-start;margin-bottom:7px}
+.cl .grade{display:grid;grid-template-columns:1fr 90px 90px;gap:6px}
+#aviso{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + var(--seg));background:var(--tinta);color:#fff;padding:10px 15px;border-radius:11px;z-index:20;display:none;max-width:92vw;font-size:15px}
+#aviso.erro{background:var(--terra)}
+#carga{position:fixed;top:0;left:0;height:3px;width:100%;background:var(--terra);z-index:30;display:none;animation:pulso 1s ease-in-out infinite}
+@keyframes pulso{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){#carga{animation:none}}
+@media (min-width:560px){.kpis{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div id="carga"></div>
+<div id="app"><div class="vazio">Abrindo a casa...</div></div>
+<nav aria-label="Módulos"><div id="menu"></div></nav>
+<div id="fundo"><div id="folha" role="dialog" aria-modal="true"></div></div>
+<div id="aviso" role="status"></div>
+
+<script>
+var E = null, TELA = 'inicio', CAT = 'Alimento', BUSCA = '', FORM = null, PORC = 1, CUPOM = null;
+
+var ICONES = {
+  inicio: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  cardapio: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  receitas: '<path d="M6 3h11a2 2 0 0 1 2 2v16H7a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2z"/><path d="M4 18a3 3 0 0 1 3-3h12"/>',
+  compras: '<path d="M3 4h2l2.4 11h11l2-8H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>',
+  estoque: '<path d="M3 8l9-5 9 5v9l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v9"/>',
+  contas: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/>'
+};
+var MENU = [['inicio', 'Início'], ['cardapio', 'Cardápio'], ['receitas', 'Receitas'], ['compras', 'Compras'], ['estoque', 'Estoque'], ['contas', 'Contas']];
+
+/* ---------- utilidades ---------- */
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function n(v, casas) { return Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: casas === undefined ? 2 : casas }); }
+function brl(v) { return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+function qtd(v, u) {
+  var x = Number(v || 0);
+  if (u === 'g' && Math.abs(x) >= 1000) return n(x / 1000) + ' kg';
+  if (u === 'ml' && Math.abs(x) >= 1000) return n(x / 1000) + ' L';
+  return n(x) + ' ' + u;
+}
+/** Preço por kg, por litro ou por unidade, a partir do preço por unidade padrão. */
+function precoBase(v, u) {
+  if (!Number(v)) return 'sem preço';
+  if (u === 'g') return brl(v * 1000) + '/kg';
+  if (u === 'ml') return brl(v * 1000) + '/L';
+  return brl(v) + '/un';
+}
+function isoDia(base, soma) {
+  var p = base.split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2] + soma);
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+}
+function diaLongo(iso) {
+  var p = iso.split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]);
+  return d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+}
+function dataCurta(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] : ''; }
+function porId(lista, id) { return lista.filter(function (x) { return x.id === id; })[0]; }
+function opcoes(lista, atual) {
+  return lista.map(function (o) {
+    var v = o.v !== undefined ? o.v : o, t = o.t !== undefined ? o.t : o;
+    return '<option value="' + esc(v) + '"' + (String(v) === String(atual) ? ' selected' : '') + '>' + esc(t) + '</option>';
+  }).join('');
+}
+function campo(rot, nome, valor, tipo, extra) {
+  return '<label class="campo">' + esc(rot) + '<input name="' + nome + '" type="' + (tipo || 'text') + '" value="' + esc(valor) + '" ' + (extra || '') + '></label>';
+}
+function selecao(rot, nome, lista, atual) {
+  return '<label class="campo">' + esc(rot) + '<select name="' + nome + '">' + opcoes(lista, atual) + '</select></label>';
+}
+var DEC = 'step="any" inputmode="decimal"';
+function unidadeTxt(r, q) {
+  var m = r && r.unidade === 'Marmita';
+  return Number(q) === 1 ? (m ? 'marmita' : 'porção') : (m ? 'marmitas' : 'porções');
+}
+function lotesDe(id) { return E.lotes.filter(function (l) { return l.id === id; }); }
+function lotesAlerta() { return E.lotes.filter(function (l) { return l.situacao !== 'OK'; }); }
+
+function avisar(txt, erro) {
+  var a = document.getElementById('aviso');
+  a.textContent = txt; a.className = erro ? 'erro' : ''; a.style.display = 'block';
+  clearTimeout(a._t); a._t = setTimeout(function () { a.style.display = 'none'; }, erro ? 7000 : 3200);
+}
+function carregando(s) { document.getElementById('carga').style.display = s ? 'block' : 'none'; }
+
+/* ---------- servidor ----------
+   Dentro do Apps Script usa google.script.run; publicado fora (GitHub Pages) chama a API por fetch.
+   ERP_API é injetado pelo build da versão web. A chave do app fica só neste navegador. */
+var ERP_API = window.ERP_API || '';
+function chaveApp() { try { return localStorage.getItem('erp_chave') || ''; } catch (e) { return ''; } }
+function guardarChave(c) { try { localStorage.setItem('erp_chave', c); } catch (e) {} }
+function servidor(acao, dados, ok, falha) {
+  function erro(err) {
+    var m = (err && err.message) || String(err);
+    if (/CHAVE_INVALIDA|CHAVE_NAO_CONFIGURADA/.test(m)) { carregando(false); telaChave(m.replace(/^[A-Z_]+: ?/, '')); return; }
+    falha(err);
+  }
+  if (window.google && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(ok).withFailureHandler(erro).api(acao, dados, chaveApp());
+    return;
+  }
+  if (!ERP_API) { erro(new Error('Endereço da API não configurado nesta versão (web.json).')); return; }
+  fetch(ERP_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ acao: acao, dados: dados || {}, chave: chaveApp() })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (j) { if (j.ok) ok(j.r); else erro(new Error(j.erro)); })
+    .catch(function (e) { erro(new Error('Sem conexão com a planilha: ' + (e.message || e))); });
+}
+function telaChave(msg) {
+  document.getElementById('menu').innerHTML = '';
+  document.getElementById('app').innerHTML = topo('ERP-Home', '') +
+    '<div class="cartao"><p>' + esc(msg || 'Digite a chave do app para abrir os dados da casa.') + '</p>' +
+    '<label class="campo">Chave do app<input id="chave" type="password" autocomplete="off" value=""></label>' +
+    '<button class="btn total" id="entrar">Entrar</button></div>';
+  document.getElementById('entrar').onclick = function () {
+    guardarChave(document.getElementById('chave').value.trim());
+    iniciar();
+  };
+}
+
+function chamar(acao, dados, msg) {
+  carregando(true);
+  servidor(acao, dados, function (e) {
+    E = e; carregando(false); fecharFolha(); desenhar();
+    if (e.avisos && e.avisos.length) avisar(e.avisos.join(' '), true);
+    else if (msg) avisar(msg);
+  }, function (err) { carregando(false); avisar(err.message || String(err), true); });
+}
+/** Consulta que não altera o estado: devolve o resultado para quem chamou. */
+function consultar(acao, dados, ok) {
+  carregando(true);
+  servidor(acao, dados, function (r) { carregando(false); ok(r); },
+    function (err) { carregando(false); avisar(err.message || String(err), true); });
+}
+
+/* ---------- telas ---------- */
+function topo(t, sub) { return '<div class="topo"><h1>' + esc(t) + '</h1><small>' + esc(sub || '') + '</small></div>'; }
+function kpi(tela, v, rot, ruim) {
+  return '<button class="kpi' + (ruim ? ' ruim' : '') + '" data-a="ir" data-tela="' + tela + '"><b>' + esc(v) + '</b><span>' + esc(rot) + '</span></button>';
+}
+
+function tInicio() {
+  var p = E.painel, alerta = lotesAlerta();
+  var hoje = E.plano.filter(function (x) { return x.status === 'Planejado' && x.data === E.hoje; });
+  var cont = E.contas.filter(function (c) { return c.situacao === 'Atrasada' || c.situacao === 'Vence em breve'; })
+    .sort(function (a, b) { return a.vencimento < b.vencimento ? -1 : 1; });
+  var h = topo(E.casa, diaLongo(E.hoje));
+  h += '<div class="kpis">' +
+    kpi('compras', p.itens_comprar, 'itens a comprar') +
+    kpi('compras', brl(p.custo_compra), 'custo da compra') +
+    kpi('contas', brl(p.contas_aberto), 'contas em aberto', p.contas_atrasadas > 0) +
+    kpi('estoque', alerta.length, 'use primeiro', alerta.length > 0) +
+    kpi('estoque', brl(p.gasto_mes), 'gasto no mês') +
+    kpi('estoque', brl(p.valor_estoque), 'em estoque') + '</div>';
+  h += '<div class="sec"><h2>Hoje</h2><button class="btn mini claro" data-a="plano-novo">Planejar</button></div><div class="cartao">';
+  h += hoje.length ? hoje.map(linhaPlano).join('') : '<div class="vazio">Nada planejado para hoje.</div>';
+  h += '</div>';
+  if (alerta.length) h += '<div class="sec"><h2>Use primeiro</h2></div><div class="cartao">' + alerta.slice(0, 6).map(linhaLote).join('') + '</div>';
+  h += '<div class="sec"><h2>Contas que pedem atenção</h2></div><div class="cartao">';
+  h += cont.length ? cont.slice(0, 5).map(linhaConta).join('') : '<div class="vazio">Nenhuma conta atrasada ou vencendo.</div>';
+  h += '</div>';
+  if (p.receitas_incompletas) h += '<div class="nota">' + n(p.receitas_incompletas, 0) + ' receitas estão incompletas e entram só em parte no cálculo de compras e de custo.</div>';
+  return h;
+}
+
+function linhaLote(l) {
+  var item = porId(E.itens, l.id), r = porId(E.receitas, l.id);
+  var u = item ? item.unidade_padrao : unidadeTxt(r, l.quantidade);
+  var cl = l.situacao === 'Vencido' ? 'alerta' : l.situacao === 'Use primeiro' ? 'aviso' : '';
+  var quando = l.dias < 0 ? 'venceu há ' + (-l.dias) + ' dia(s)' : l.dias === 0 ? 'vence hoje' : 'vence em ' + l.dias + ' dia(s)';
+  return '<button class="linha" data-a="' + (item ? 'item-ver' : 'pronto-ver') + '" data-id="' + esc(l.id) + '"><div class="cresce"><div class="titulo">' + esc(l.nome) + '</div>' +
+    '<div class="sub">' + esc(item ? qtd(l.quantidade, u) : n(l.quantidade) + ' ' + u) + ' · ' + esc(quando) + '</div></div>' +
+    '<span class="chip ' + cl + '">' + esc(l.situacao) + '</span></button>';
+}
+
+function linhaPlano(x) {
+  var r = porId(E.receitas, x.receita_id), inc = r && r.status !== 'Completa';
+  return '<div class="linha"><div class="cresce"><div class="titulo">' + esc(x.receita) + '</div><div class="sub">' +
+    esc(x.refeicao) + ' · ' + n(x.porcoes) + ' ' + esc(unidadeTxt(r, x.porcoes)) +
+    (r && Number(r.estoque_pronto) > 0 ? ' · ' + n(r.estoque_pronto) + ' prontas' : '') +
+    (inc ? ' · <span class="chip aviso">ficha incompleta</span>' : '') + '</div></div>' +
+    '<button class="btn mini" data-a="plano-produzir" data-l="' + x._linha + '">Produzi</button>' +
+    '<button class="fechar" aria-label="Remover do plano" data-a="plano-remover" data-l="' + x._linha + '" data-r="' + esc(x.receita_id) + '">×</button></div>';
+}
+
+function tCardapio() {
+  var abertos = E.plano.filter(function (x) { return x.status === 'Planejado'; });
+  var h = topo('Cardápio', 'próximos 7 dias');
+  h += '<button class="btn total" data-a="plano-novo">Planejar refeição</button><div style="height:12px"></div>';
+  var atras = abertos.filter(function (x) { return x.data < E.hoje; });
+  if (atras.length) h += '<div class="cartao"><div class="dia">Ficaram para trás</div>' + atras.map(linhaPlano).join('') + '</div>';
+  for (var i = 0; i < 7; i++) {
+    var d = isoDia(E.hoje, i), doDia = abertos.filter(function (x) { return x.data === d; });
+    h += '<div class="cartao"><div class="dia' + (i === 0 ? ' hoje' : '') + '">' + esc(diaLongo(d)) + '</div>';
+    h += doDia.length ? doDia.map(linhaPlano).join('') : '<div class="vazio">Sem preparo.</div>';
+    h += '</div>';
+  }
+  var depois = abertos.filter(function (x) { return x.data > isoDia(E.hoje, 6); });
+  if (depois.length) h += '<div class="cartao"><div class="dia">Mais adiante</div>' + depois.map(linhaPlano).join('') + '</div>';
+  return h;
+}
+
+function chipCusto(r) {
+  if (!Number(r.custo_unitario)) return '<span class="chip neutro">sem custo</span>';
+  return '<span class="chip ' + (r.custo_situacao === 'Parcial' ? 'aviso' : '') + '">' + brl(r.custo_unitario) + '/' + (r.unidade === 'Marmita' ? 'marmita' : 'porção') + (r.custo_situacao === 'Parcial' ? '*' : '') + '</span>';
+}
+
+function tReceitas() {
+  var f = BUSCA.toLowerCase();
+  var l = E.receitas.filter(function (r) { return String(r.receita).toLowerCase().indexOf(f) >= 0; })
+    .sort(function (a, b) { return a.status === b.status ? String(a.receita).localeCompare(b.receita) : (a.status === 'Completa' ? -1 : 1); });
+  var h = topo('Receitas', E.receitas.length + ' cadastradas');
+  h += '<input class="busca" data-busca placeholder="Buscar receita" value="' + esc(BUSCA) + '">';
+  h += '<div class="cartao">' + l.map(function (r) {
+    return '<button class="linha" data-a="receita-ver" data-id="' + esc(r.id) + '"><div class="cresce"><div class="titulo">' + esc(r.receita) + '</div>' +
+      '<div class="sub">' + (Number(r.rendimento) ? 'Rende ' + n(r.rendimento) + ' ' + esc(unidadeTxt(r, r.rendimento)) : 'Sem rendimento') +
+      (r.status === 'Completa' ? '' : ' · incompleta') + (Number(r.estoque_pronto) > 0 ? ' · ' + n(r.estoque_pronto) + ' prontas' : '') + '</div></div>' +
+      chipCusto(r) + '</button>';
+  }).join('') + (l.length ? '' : '<div class="vazio">Nenhuma receita encontrada.</div>') + '</div>';
+  h += '<div class="sub" style="margin-bottom:10px">* custo parcial: há ingrediente sem preço conhecido.</div>';
+  h += '<button class="btn total claro" data-a="receita-editar" data-id="">Nova receita</button>';
+  return h;
+}
+
+function tCompras() {
+  var l = E.itens.filter(function (i) { return Number(i.comprar) > 0; })
+    .sort(function (a, b) { return String(a.categoria + a.produto).localeCompare(b.categoria + b.produto); });
+  var inc = E.plano.filter(function (x) {
+    var r = porId(E.receitas, x.receita_id);
+    return x.status === 'Planejado' && r && r.status !== 'Completa';
+  }).length;
+  var ate = E.config.proxima_compra;
+  var h = topo('Compras', l.length + ' itens');
+  h += '<div class="cartao"><div class="dados"><div><span class="sub">Custo estimado</span><b class="grande">' + brl(E.painel.custo_compra) + '</b></div>' +
+    '<div><span class="sub">Plano considerado</span><b>' + (ate ? 'até ' + esc(dataCurta(ate)) : 'tudo que está planejado') + '</b>' +
+    '<button class="btn mini claro" style="margin-top:6px" data-a="horizonte">Mudar</button></div></div>';
+  if (E.painel.itens_sem_preco) h += '<div class="pad sub">' + n(E.painel.itens_sem_preco, 0) + ' itens sem preço ficam fora do custo.</div>';
+  h += '</div>';
+  h += '<div class="acoes" style="margin-bottom:12px"><button class="btn" data-a="cupom">Ler cupom fiscal</button><button class="btn claro" data-a="compra-avulsa">Compra avulsa</button></div>';
+  if (inc) h += '<div class="nota">' + inc + ' preparo(s) do plano usam receita incompleta. A lista pode estar menor do que o necessário.</div>';
+  h += '<div class="cartao">';
+  h += l.length ? l.map(function (i) {
+    var emb = Number(i.embalagens) ? n(i.embalagens, 0) + ' × ' + esc(i.embalagem || 'embalagem') : '';
+    var motivo = [];
+    if (Number(i.necessidade_plano)) motivo.push('plano ' + qtd(i.necessidade_plano, i.unidade_padrao));
+    if (Number(i.demanda_consumo)) motivo.push('consumo ' + qtd(i.demanda_consumo, i.unidade_padrao));
+    if (Number(i.estoque_minimo)) motivo.push('mínimo ' + qtd(i.estoque_minimo, i.unidade_padrao));
+    return '<button class="linha" data-a="compra" data-id="' + esc(i.id) + '"><div class="cresce"><div class="titulo">' + esc(i.produto) + '</div>' +
+      '<div class="sub">tem ' + esc(qtd(i.saldo, i.unidade_padrao)) + ' · ' + esc(motivo.join(' + ')) + (emb ? ' · ' + emb : '') + '</div></div>' +
+      '<div class="num"><b>' + esc(qtd(i.comprar, i.unidade_padrao)) + '</b><div class="sub">' + (Number(i.custo_estimado) ? brl(i.custo_estimado) : 'sem preço') + '</div></div></button>';
+  }).join('') : '<div class="vazio">Nada a comprar para o período.</div>';
+  return h + '</div>';
+}
+
+function chipItem(s) {
+  if (s === 'Abaixo do mínimo') return '<span class="chip alerta">Abaixo do mínimo</span>';
+  if (s === 'Comprar') return '<span class="chip aviso">Comprar</span>';
+  return '';
+}
+function tEstoque() {
+  var f = BUSCA.toLowerCase();
+  var h = topo('Estoque', brl(E.painel.valor_estoque) + ' guardados');
+  h += '<div class="chips">' + E.listas.categorias_item.concat(['Prontos']).map(function (c) {
+    return '<button class="' + (c === CAT ? 'on' : '') + '" data-a="cat" data-c="' + esc(c) + '">' + esc(c) + '</button>';
+  }).join('') + '</div>';
+  h += '<input class="busca" data-busca placeholder="Buscar" value="' + esc(BUSCA) + '"><div class="cartao">';
+  if (CAT === 'Prontos') {
+    var pr = E.receitas.filter(function (r) { return Number(r.estoque_pronto) > 0 && String(r.receita).toLowerCase().indexOf(f) >= 0; });
+    h += pr.length ? pr.map(function (r) {
+      var lt = lotesDe(r.id)[0];
+      return '<button class="linha" data-a="pronto-ver" data-id="' + esc(r.id) + '"><div class="cresce"><div class="titulo">' + esc(r.receita) + '</div>' +
+        '<div class="sub">' + (lt ? 'primeira vence ' + esc(dataCurta(lt.validade)) : 'sem validade registrada') + '</div></div>' +
+        (lt && lt.situacao !== 'OK' ? '<span class="chip ' + (lt.situacao === 'Vencido' ? 'alerta' : 'aviso') + '">' + esc(lt.situacao) + '</span>' : '') +
+        '<div class="num"><b>' + n(r.estoque_pronto) + '</b><div class="sub">' + esc(unidadeTxt(r, r.estoque_pronto)) + '</div></div></button>';
+    }).join('') : '<div class="vazio">Nenhuma comida pronta guardada. Ao marcar um preparo como produzido, você escolhe quanto guardar.</div>';
+    return h + '</div>';
+  }
+  var l = E.itens.filter(function (i) { return i.categoria === CAT && String(i.produto).toLowerCase().indexOf(f) >= 0; })
+    .sort(function (a, b) { return String(a.produto).localeCompare(b.produto); });
+  h += l.length ? l.map(function (i) {
+    var lt = lotesDe(i.id).filter(function (x) { return x.situacao !== 'OK'; })[0];
+    return '<button class="linha" data-a="item-ver" data-id="' + esc(i.id) + '"><div class="cresce"><div class="titulo">' + esc(i.produto) + '</div>' +
+      '<div class="sub">' + esc(i.local || 'Sem local') + ' · ' + esc(precoBase(i.custo_ref, i.unidade_padrao)) + (i.reposicao === 'Consumo' ? ' · consumo' : '') + '</div></div>' +
+      (lt ? '<span class="chip ' + (lt.situacao === 'Vencido' ? 'alerta' : 'aviso') + '">' + esc(lt.situacao) + '</span>' : chipItem(i.situacao)) +
+      '<div class="num"><b>' + (i.controla_estoque === 'Sim' ? esc(qtd(i.saldo, i.unidade_padrao)) : '—') + '</b></div></button>';
+  }).join('') : '<div class="vazio">Nenhum item nesta categoria.</div>';
+  h += '</div><button class="btn total claro" data-a="item-editar" data-id="">Novo item</button>';
+  return h;
+}
+
+function linhaConta(c) {
+  var cl = c.situacao === 'Atrasada' ? 'alerta' : c.situacao === 'Vence em breve' ? 'aviso' : c.situacao === 'Paga' ? 'neutro' : '';
+  return '<button class="linha" data-a="conta-ver" data-l="' + c._linha + '"><div class="cresce"><div class="titulo">' + esc(c.descricao) + '</div>' +
+    '<div class="sub">' + esc(c.categoria) + ' · ' + (c.status === 'Paga' ? 'paga em ' + dataCurta(c.pago_em) : 'vence ' + dataCurta(c.vencimento)) + (c.recorrencia === 'Mensal' ? ' · mensal' : '') + '</div></div>' +
+    '<div class="num"><b>' + brl(c.status === 'Paga' ? c.valor_pago : c.valor) + '</b><div><span class="chip ' + cl + '">' + esc(c.situacao) + '</span></div></div></button>';
+}
+function tContas() {
+  var ab = E.contas.filter(function (c) { return c.status !== 'Paga'; }).sort(function (a, b) { return a.vencimento < b.vencimento ? -1 : 1; });
+  var pg = E.contas.filter(function (c) { return c.status === 'Paga'; }).sort(function (a, b) { return a.pago_em > b.pago_em ? -1 : 1; }).slice(0, 8);
+  var h = topo('Contas', brl(E.painel.contas_aberto) + ' em aberto');
+  h += '<button class="btn total" data-a="conta-editar" data-l="">Nova conta</button><div style="height:12px"></div><div class="cartao">';
+  h += ab.length ? ab.map(linhaConta).join('') : '<div class="vazio">Nenhuma conta em aberto. Cadastre luz, água, internet e o que mais vence no mês.</div>';
+  h += '</div>';
+  if (pg.length) h += '<div class="sec"><h2>Pagas recentemente</h2></div><div class="cartao">' + pg.map(linhaConta).join('') + '</div>';
+  return h;
+}
+
+/* ---------- folhas ---------- */
+function abrirFolha(titulo, corpo, enviar) {
+  var f = document.getElementById('folha');
+  f.innerHTML = '<div class="folhatopo"><h3>' + esc(titulo) + '</h3><button class="fechar" aria-label="Fechar" data-a="fechar">×</button></div><form id="form">' + corpo + '</form>';
+  FORM = enviar || null;
+  document.getElementById('fundo').className = 'on';
+}
+function fecharFolha() { document.getElementById('fundo').className = ''; FORM = null; }
+function dadosForm() {
+  var o = {};
+  new FormData(document.getElementById('form')).forEach(function (v, k) { o[k] = v; });
+  return o;
+}
+
+function folhaPlano(rid) {
+  var ops = E.receitas.slice().sort(function (a, b) { return String(a.receita).localeCompare(b.receita); })
+    .map(function (r) { return { v: r.id, t: r.receita + (r.status === 'Completa' ? '' : ' (incompleta)') }; });
+  abrirFolha('Planejar refeição',
+    selecao('Receita', 'receita_id', ops, rid || '') +
+    '<div class="dupla">' + campo('Dia', 'data', E.hoje, 'date', 'required') + selecao('Refeição', 'refeicao', E.listas.refeicoes, 'Almoço') + '</div>' +
+    campo('Quantidade (porções ou marmitas)', 'porcoes', PORC || 1, 'number', DEC + ' min="0.25" required') +
+    '<button class="btn total">Adicionar ao plano</button>',
+    function (d) { chamar('plano.adicionar', d, 'Adicionado. A lista de compras foi recalculada.'); });
+}
+
+function folhaProduzir(linha) {
+  var x = E.plano.filter(function (p) { return p._linha === Number(linha); })[0];
+  var r = porId(E.receitas, x.receita_id), total = Number(x.porcoes);
+  var pronto = Math.max(0, Number(r.estoque_pronto || 0)), usar = Math.min(pronto, total);
+  var guardar = r.unidade === 'Marmita' ? total - usar : 0;
+  var val = Number(r.validade_dias) > 0 ? isoDia(E.hoje, Number(r.validade_dias)) : '';
+  abrirFolha('Produzi: ' + x.receita,
+    '<div class="sub" style="margin-bottom:10px">Plano: ' + n(total) + ' ' + esc(unidadeTxt(r, total)) + '. Os ingredientes do que for cozinhado saem do estoque pela ficha.</div>' +
+    (pronto ? campo('Usar das prontas (há ' + n(pronto) + ')', 'usar_pronto', usar, 'number', DEC + ' min="0" max="' + Math.min(pronto, total) + '"') : '<input type="hidden" name="usar_pronto" value="0">') +
+    '<div class="dupla">' + campo('Guardar para depois', 'guardar', guardar, 'number', DEC + ' min="0"') +
+    campo('Validade do que guardar', 'validade', val, 'date') + '</div>' +
+    '<button class="btn total">Confirmar produção</button>',
+    function (d) { d.linha = x._linha; d.receita_id = x.receita_id; chamar('plano.produzir', d, 'Produção registrada.'); });
+}
+
+function folhaReceita(id, manterPorc) {
+  var r = porId(E.receitas, id);
+  if (!manterPorc) PORC = Number(r.rendimento) || 1;
+  var rend = Number(r.rendimento);
+  var corpo = '';
+  if (r.obs) corpo += '<div class="nota">' + esc(r.obs) + '</div>';
+  corpo += '<div class="cartao"><div class="dados"><div><span class="sub">Custo por ' + (r.unidade === 'Marmita' ? 'marmita' : 'porção') + '</span><b>' + (Number(r.custo_unitario) ? brl(r.custo_unitario) : '—') + '</b>' +
+    (r.custo_situacao === 'Parcial' ? '<span class="sub">parcial, falta preço</span>' : '') + '</div>' +
+    '<div><span class="sub">Custo para ' + n(PORC) + '</span><b>' + (Number(r.custo_unitario) ? brl(r.custo_unitario * PORC) : '—') + '</b></div></div></div>';
+  if (rend) {
+    corpo += '<div class="sub" style="text-align:center">Para quantas ' + (r.unidade === 'Marmita' ? 'marmitas' : 'porções') + '?</div>' +
+      '<div class="passo"><button type="button" aria-label="Menos" data-a="porc" data-d="-1">−</button><b>' + n(PORC) + '</b><button type="button" aria-label="Mais" data-a="porc" data-d="1">+</button></div>';
+  }
+  corpo += '<div class="cartao">' + (r.linhas.length ? r.linhas.map(function (l) {
+    var q = Number(l.quantidade), v = !q ? 'quantidade pendente' : rend ? n(q / rend * PORC) + ' ' + l.unidade : n(q) + ' ' + l.unidade;
+    var sub = porId(E.receitas, l.componente_id);
+    var vlr = sub ? (rend ? Number(l.quantidade || 0) / rend * Number(sub.custo_unitario || 0) : 0) : Number(l.custo_item || 0);
+    var custo = vlr ? brl(vlr * PORC) : '';
+    return '<div class="linha"><div class="cresce"><div class="titulo">' + esc(l.componente) + '</div><div class="sub">' + esc(l.etapa) + (l.tem_preco === 'Não' ? ' · sem preço' : '') + '</div></div>' +
+      '<div class="num' + (q ? '' : ' sub') + '">' + esc(v) + (custo ? '<div class="sub">' + custo + '</div>' : '') + '</div></div>';
+  }).join('') : '<div class="vazio">Ficha ainda sem ingredientes.</div>') + '</div>';
+  corpo += '<div class="acoes"><button type="button" class="btn claro" data-a="receita-editar" data-id="' + esc(r.id) + '">Editar ficha</button>' +
+    '<button type="button" class="btn" data-a="plano-novo" data-r="' + esc(r.id) + '">Planejar</button></div>';
+  abrirFolha(r.receita, corpo);
+  document.getElementById('folha').dataset.rid = id;
+}
+
+function compOpcoes(atual, selfId) {
+  var it = E.itens.slice().sort(function (a, b) { return String(a.produto).localeCompare(b.produto); });
+  var rc = E.receitas.filter(function (r) { return r.id !== selfId; });
+  return '<option value="">Escolha</option><optgroup label="Receitas">' + opcoes(rc.map(function (r) { return { v: r.id, t: r.receita }; }), atual) +
+    '</optgroup><optgroup label="Ingredientes">' + opcoes(it.map(function (i) { return { v: i.id, t: i.produto }; }), atual) + '</optgroup>';
+}
+function htmlFl(l, selfId) {
+  var us = E.unidades.map(function (u) { return u.unidade; });
+  return '<div class="fl"><select data-c aria-label="Componente">' + compOpcoes(l.componente_id, selfId) + '</select>' +
+    '<input data-q type="number" ' + DEC + ' aria-label="Quantidade" value="' + esc(l.quantidade) + '">' +
+    '<select data-u aria-label="Unidade">' + opcoes(us, l.unidade) + '</select>' +
+    '<button type="button" aria-label="Remover linha" data-a="fl-rem">×</button></div>';
+}
+function folhaEditarReceita(id) {
+  var r = id ? porId(E.receitas, id) : { receita: '', unidade: 'Porção', rendimento: '', validade_dias: '', obs: '', linhas: [] };
+  var ls = r.linhas.length ? r.linhas : [{ componente_id: '', quantidade: '', unidade: 'g' }];
+  abrirFolha(id ? 'Editar ficha' : 'Nova receita',
+    campo('Nome', 'receita', r.receita, 'text', 'required') +
+    '<div class="dupla">' + selecao('Unidade', 'unidade', ['Porção', 'Marmita'], r.unidade) + campo('Rendimento', 'rendimento', r.rendimento, 'number', DEC + ' min="0"') + '</div>' +
+    '<div class="dupla">' + campo('Validade guardada (dias)', 'validade_dias', r.validade_dias, 'number', 'min="0" inputmode="numeric"') + campo('Observação', 'obs', r.obs) + '</div>' +
+    '<div class="sub" style="margin-bottom:6px">Ingredientes para o rendimento acima</div><div id="fls" data-self="' + esc(id || '') + '">' + ls.map(function (l) { return htmlFl(l, id); }).join('') + '</div>' +
+    '<div class="acoes"><button type="button" class="btn claro mini" data-a="fl-add">Adicionar linha</button></div><div style="height:12px"></div>' +
+    '<button class="btn total">Salvar receita</button>',
+    function (d) {
+      d.id = id || '';
+      d.linhas = [].map.call(document.querySelectorAll('#fls .fl'), function (x) {
+        return {
+          componente_id: x.querySelector('[data-c]').value,
+          quantidade: x.querySelector('[data-q]').value,
+          unidade: x.querySelector('[data-u]').value,
+          etapa: x.querySelector('[data-c]').value.charAt(0) === 'R' ? 'Montagem' : 'Cozinha'
+        };
+      });
+      chamar('receita.salvar', d, 'Receita salva.');
+    });
+}
+
+function camposCompra(i, sug) {
+  return '<div class="dupla">' + campo('Quantidade (' + i.unidade_padrao + ')', 'quantidade', sug, 'number', DEC + ' min="0" required') +
+    campo('Valor pago (R$)', 'valor', '', 'number', DEC + ' min="0"') + '</div>' +
+    '<div class="dupla">' + campo('Loja', 'loja', '', 'text') + campo('Validade', 'validade', '', 'date') + '</div>';
+}
+function folhaCompra(id) {
+  var i = porId(E.itens, id), emb = Number(i.qtd_embalagem), sug = emb && Number(i.embalagens) ? emb * Number(i.embalagens) : Number(i.comprar);
+  abrirFolha('Comprei ' + i.produto, camposCompra(i, sug) + '<button class="btn total">Dar entrada no estoque</button>',
+    function (d) { d.item_id = id; chamar('compras.registrar', d, 'Entrada registrada.'); });
+}
+function folhaCompraAvulsa() {
+  var ops = E.itens.slice().sort(function (a, b) { return String(a.produto).localeCompare(b.produto); })
+    .map(function (i) { return { v: i.id, t: i.produto + ' (' + i.unidade_padrao + ')' }; });
+  abrirFolha('Compra avulsa', selecao('Item', 'item_id', ops, '') + camposCompra({ unidade_padrao: 'unidade padrão' }, '') +
+    '<button class="btn total">Dar entrada no estoque</button>',
+    function (d) { chamar('compras.registrar', d, 'Entrada registrada.'); });
+}
+function folhaHorizonte() {
+  abrirFolha('Próxima compra',
+    '<div class="sub" style="margin-bottom:10px">Entra na lista o que estiver planejado até esta data. Itens de limpeza e higiene usam o consumo médio de ' + n(E.config.dias_cobertura, 0) + ' dias.</div>' +
+    campo('Data da próxima compra', 'valor', E.config.proxima_compra, 'date') +
+    '<div class="acoes"><button type="button" class="btn claro" data-a="horizonte-limpar">Considerar tudo</button><button class="btn">Salvar</button></div>',
+    function (d) { d.chave = 'proxima_compra'; chamar('config.salvar', d, 'Lista recalculada.'); });
+}
+
+/* ----- cupom fiscal ----- */
+function folhaCupom() {
+  if (!E.config.gemini) {
+    abrirFolha('Ler cupom fiscal', '<div class="nota">Falta a chave do Gemini. No editor do Apps Script, em Configurações do projeto, crie a propriedade GEMINI_API_KEY com uma chave do Google AI Studio.</div>');
+    return;
+  }
+  abrirFolha('Ler cupom fiscal',
+    '<label class="campo">Foto do cupom<input id="fotoCupom" type="file" accept="image/*" capture="environment"></label>' +
+    '<div class="sub" style="margin:4px 0 12px">ou</div>' +
+    campo('Link do QR code da NFC-e', 'url', '', 'url', 'placeholder="https://..."') +
+    '<button class="btn total">Ler com o Gemini</button>',
+    function (d) {
+      var arq = document.getElementById('fotoCupom').files[0];
+      if (arq) return reduzirImagem(arq, function (b64) { lerCupom({ imagem: b64, mime: 'image/jpeg' }); });
+      if (d.url) return lerCupom({ url: d.url });
+      avisar('Escolha a foto ou cole o link.', true);
+    });
+}
+/** Reduz a foto para no máximo 1600 px antes de enviar. */
+function reduzirImagem(arq, ok) {
+  var leitor = new FileReader();
+  leitor.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      var esc2 = Math.min(1, 1600 / Math.max(img.width, img.height));
+      var c = document.createElement('canvas');
+      c.width = Math.round(img.width * esc2); c.height = Math.round(img.height * esc2);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    };
+    img.onerror = function () { avisar('Não consegui abrir a imagem.', true); };
+    img.src = leitor.result;
+  };
+  leitor.readAsDataURL(arq);
+}
+function lerCupom(dados) {
+  consultar('cupom.ler', dados, function (r) { CUPOM = r; folhaRevisarCupom(); });
+}
+function folhaRevisarCupom() {
+  var ops = [{ v: '', t: 'Não registrar' }].concat(E.itens.slice().sort(function (a, b) { return String(a.produto).localeCompare(b.produto); })
+    .map(function (i) { return { v: i.id, t: i.produto + ' (' + i.unidade_padrao + ')' }; }));
+  var total = CUPOM.itens.reduce(function (a, l) { return a + Number(l.valor || 0); }, 0);
+  abrirFolha('Revisar cupom',
+    '<div class="dupla">' + campo('Loja', 'loja', CUPOM.loja) + campo('Data', 'data', CUPOM.data, 'date') + '</div>' +
+    '<div class="sub" style="margin-bottom:8px">' + CUPOM.itens.length + ' linhas, ' + brl(total) + '. Confira item e quantidade na unidade padrão antes de registrar.</div>' +
+    '<div class="grade sub" style="display:grid;grid-template-columns:1fr 90px 90px;gap:6px;padding:0 11px 4px"><span>Item do cadastro</span><span>Quantidade</span><span>Valor (R$)</span></div>' +
+    CUPOM.itens.map(function (l, k) {
+      return '<div class="cl' + (l.item_id ? '' : ' off') + '" data-k="' + k + '"><div class="topo2"><div class="cresce"><div class="titulo">' + esc(l.descricao) + '</div>' +
+        '<div class="sub">confiança ' + esc(l.confianca) + '</div></div></div>' +
+        '<div class="grade"><select data-ci aria-label="Item do cadastro">' + opcoes(ops, l.item_id) + '</select>' +
+        '<input data-cq type="number" ' + DEC + ' aria-label="Quantidade" value="' + esc(l.quantidade) + '">' +
+        '<input data-cv type="number" ' + DEC + ' aria-label="Valor" value="' + esc(l.valor) + '"></div></div>';
+    }).join('') +
+    '<button class="btn total">Registrar compras</button>',
+    function (d) {
+      d.linhas = [].map.call(document.querySelectorAll('.cl'), function (x) {
+        return {
+          descricao: CUPOM.itens[Number(x.dataset.k)].descricao,
+          item_id: x.querySelector('[data-ci]').value,
+          quantidade: x.querySelector('[data-cq]').value,
+          valor: x.querySelector('[data-cv]').value
+        };
+      }).filter(function (l) { return l.item_id; });
+      chamar('cupom.registrar', d, d.linhas.length + ' compras registradas.');
+    });
+}
+
+function folhaItem(id) {
+  var i = porId(E.itens, id), precos = E.precos[id] || [], lts = lotesDe(id);
+  var corpo = '<div class="cartao"><div class="dados">' +
+    '<div><span class="sub">Saldo</span><b class="grande">' + esc(qtd(i.saldo, i.unidade_padrao)) + '</b></div>' +
+    '<div><span class="sub">Preço de referência</span><b>' + esc(precoBase(i.custo_ref, i.unidade_padrao)) + '</b>' +
+    (Number(i.custo_medio) ? '<span class="sub">médio ' + esc(precoBase(i.custo_medio, i.unidade_padrao)) + '</span>' : '') + '</div>' +
+    (i.reposicao === 'Consumo' ? '<div><span class="sub">Consumo médio</span><b>' + esc(qtd(i.consumo_diario, i.unidade_padrao)) + '/dia</b></div>' : '') +
+    '<div><span class="sub">Valor em estoque</span><b>' + brl(i.valor_estoque) + '</b></div></div></div>';
+  if (lts.length) corpo += '<div class="sec"><h2>Lotes</h2></div><div class="cartao">' + lts.map(linhaLote).join('') + '</div>';
+  if (precos.length) {
+    corpo += '<div class="sec"><h2>Últimas compras</h2></div><div class="cartao">' + precos.map(function (p) {
+      return '<div class="linha"><div class="cresce"><div class="titulo">' + esc(dataCurta(p.data)) + (p.loja ? ' · ' + esc(p.loja) : '') + '</div><div class="sub">' + esc(qtd(p.quantidade, i.unidade_padrao)) + ' por ' + brl(p.valor) + '</div></div>' +
+        '<div class="num">' + esc(precoBase(p.preco_base, i.unidade_padrao)) + '</div></div>';
+    }).join('') + '</div>';
+  }
+  corpo += '<div class="sec"><h2>Registrar</h2></div>' +
+    selecao('Movimento', 'tipo', [{ v: 'Contagem', t: 'Contei, o saldo real é' }, { v: 'Entrada', t: 'Entrada' }, { v: 'Saída', t: 'Saída' }], 'Contagem') +
+    '<div class="dupla">' + campo('Quantidade (' + i.unidade_padrao + ')', 'quantidade', '', 'number', DEC + ' min="0" required') + campo('Validade (entrada)', 'validade', '', 'date') + '</div>' +
+    '<div class="acoes"><button type="button" class="btn claro" data-a="item-editar" data-id="' + esc(i.id) + '">Editar cadastro</button><button class="btn">Registrar</button></div>';
+  abrirFolha(i.produto, corpo, function (d) { d.item_id = id; chamar('estoque.movimentar', d, 'Estoque atualizado.'); });
+}
+
+function folhaPronto(id) {
+  var r = porId(E.receitas, id), lts = lotesDe(id);
+  abrirFolha(r.receita,
+    '<div class="cartao"><div class="dados"><div><span class="sub">Em estoque</span><b class="grande">' + n(r.estoque_pronto) + '</b><span class="sub">' + esc(unidadeTxt(r, r.estoque_pronto)) + '</span></div>' +
+    '<div><span class="sub">Custo por ' + (r.unidade === 'Marmita' ? 'marmita' : 'porção') + '</span><b>' + (Number(r.custo_unitario) ? brl(r.custo_unitario) : '—') + '</b></div></div></div>' +
+    (lts.length ? '<div class="cartao">' + lts.map(linhaLote).join('') + '</div>' : '') +
+    '<div class="dupla">' + campo('Quantidade', 'quantidade', 1, 'number', DEC + ' min="0" required') +
+    selecao('O que aconteceu', 'motivo', [{ v: 'Consumo', t: 'Consumimos' }, { v: 'Descarte', t: 'Descartei' }], 'Consumo') + '</div>' +
+    '<button class="btn total">Dar baixa</button>',
+    function (d) { d.receita_id = id; chamar('pronto.baixar', d, 'Baixa registrada.'); });
+}
+
+function folhaEditarItem(id) {
+  var i = id ? porId(E.itens, id) : { produto: '', categoria: CAT === 'Prontos' ? 'Alimento' : CAT, unidade_padrao: 'un', controla_estoque: 'Sim', reposicao: '', embalagem: '', qtd_embalagem: '', preco_embalagem: '', estoque_minimo: '', local: '' };
+  var repo = i.reposicao || (i.categoria === 'Alimento' ? 'Plano' : 'Consumo');
+  abrirFolha(id ? 'Editar item' : 'Novo item',
+    campo('Produto', 'produto', i.produto, 'text', 'required') +
+    '<div class="dupla">' + selecao('Categoria', 'categoria', E.listas.categorias_item, i.categoria) + selecao('Unidade padrão', 'unidade_padrao', ['g', 'ml', 'un'], i.unidade_padrao) + '</div>' +
+    '<div class="dupla">' + campo('Embalagem (ex.: Pacote 1 kg)', 'embalagem', i.embalagem) + campo('Quanto vem nela', 'qtd_embalagem', i.qtd_embalagem, 'number', DEC + ' min="0"') + '</div>' +
+    '<div class="dupla">' + campo('Preço da embalagem (R$)', 'preco_embalagem', i.preco_embalagem, 'number', DEC + ' min="0"') + campo('Estoque mínimo', 'estoque_minimo', i.estoque_minimo, 'number', DEC + ' min="0"') + '</div>' +
+    '<div class="dupla">' + selecao('Reposição', 'reposicao', [{ v: 'Plano', t: 'Pelo plano de refeições' }, { v: 'Consumo', t: 'Pelo consumo médio' }], repo) + selecao('Local', 'local', [''].concat(E.listas.locais), i.local) + '</div>' +
+    selecao('Controlar estoque', 'controla_estoque', E.listas.sim_nao, i.controla_estoque) +
+    '<button class="btn total">Salvar item</button>',
+    function (d) { d.id = id || ''; chamar('item.salvar', d, 'Item salvo.'); });
+}
+
+function contaPor(l) { return E.contas.filter(function (c) { return c._linha === Number(l); })[0]; }
+function folhaConta(l) {
+  var c = contaPor(l);
+  if (c.status === 'Paga') {
+    abrirFolha(c.descricao, '<div class="cartao pad">Paga em ' + esc(dataCurta(c.pago_em)) + ', ' + brl(c.valor_pago) + '.</div>' +
+      '<button type="button" class="btn total perigo" data-a="conta-remover" data-l="' + c._linha + '">Excluir registro</button>');
+    return;
+  }
+  abrirFolha(c.descricao,
+    '<div class="cartao pad"><div class="sub">Vence ' + esc(dataCurta(c.vencimento)) + '</div><div class="grande">' + brl(c.valor) + '</div></div>' +
+    '<div class="dupla">' + campo('Valor pago (R$)', 'valor_pago', c.valor, 'number', DEC + ' min="0" required') + campo('Pago em', 'pago_em', E.hoje, 'date', 'required') + '</div>' +
+    (c.recorrencia === 'Mensal' ? '<div class="sub" style="margin-bottom:10px">Ao pagar, a conta do próximo mês é criada.</div>' : '') +
+    '<button class="btn total">Paguei</button><div style="height:9px"></div>' +
+    '<div class="acoes"><button type="button" class="btn claro" data-a="conta-editar" data-l="' + c._linha + '">Editar</button><button type="button" class="btn perigo" data-a="conta-remover" data-l="' + c._linha + '">Excluir</button></div>',
+    function (d) { d.linha = c._linha; d.descricao = c.descricao; chamar('conta.pagar', d, 'Conta paga.'); });
+}
+function folhaEditarConta(l) {
+  var c = l ? contaPor(l) : { descricao: '', categoria: 'Luz', valor: '', vencimento: E.hoje, recorrencia: 'Mensal' };
+  abrirFolha(l ? 'Editar conta' : 'Nova conta',
+    campo('Descrição', 'descricao', c.descricao, 'text', 'required placeholder="Conta de luz"') +
+    '<div class="dupla">' + selecao('Categoria', 'categoria', E.listas.categorias_conta, c.categoria) + campo('Valor (R$)', 'valor', c.valor, 'number', DEC + ' min="0" required') + '</div>' +
+    '<div class="dupla">' + campo('Vencimento', 'vencimento', c.vencimento, 'date', 'required') + selecao('Repete', 'recorrencia', E.listas.recorrencias, c.recorrencia) + '</div>' +
+    '<button class="btn total">Salvar conta</button>',
+    function (d) { if (l) { d.linha = l; d.descricao_original = c.descricao; } chamar('conta.salvar', d, 'Conta salva.'); });
+}
+
+/* ---------- eventos ---------- */
+var FN = {
+  ir: function (b) { ir(b.dataset.tela); },
+  fechar: fecharFolha,
+  cat: function (b) { CAT = b.dataset.c; desenhar(); },
+  'plano-novo': function (b) { folhaPlano(b.dataset.r); },
+  'plano-produzir': function (b) { folhaProduzir(b.dataset.l); },
+  'plano-remover': function (b) {
+    if (confirm('Remover do plano?')) chamar('plano.remover', { linha: b.dataset.l, receita_id: b.dataset.r }, 'Removido do plano.');
+  },
+  'receita-ver': function (b) { folhaReceita(b.dataset.id); },
+  'receita-editar': function (b) { folhaEditarReceita(b.dataset.id); },
+  porc: function (b) {
+    PORC = Math.max(1, PORC + Number(b.dataset.d));
+    folhaReceita(document.getElementById('folha').dataset.rid, true);
+  },
+  'fl-add': function () {
+    var w = document.getElementById('fls');
+    w.insertAdjacentHTML('beforeend', htmlFl({ componente_id: '', quantidade: '', unidade: 'g' }, w.dataset.self));
+  },
+  'fl-rem': function (b) { b.closest('.fl').remove(); },
+  compra: function (b) { folhaCompra(b.dataset.id); },
+  'compra-avulsa': folhaCompraAvulsa,
+  horizonte: folhaHorizonte,
+  'horizonte-limpar': function () { chamar('config.salvar', { chave: 'proxima_compra', valor: '' }, 'Lista recalculada.'); },
+  cupom: folhaCupom,
+  'item-ver': function (b) { folhaItem(b.dataset.id); },
+  'item-editar': function (b) { folhaEditarItem(b.dataset.id); },
+  'pronto-ver': function (b) { folhaPronto(b.dataset.id); },
+  'conta-ver': function (b) { folhaConta(b.dataset.l); },
+  'conta-editar': function (b) { folhaEditarConta(b.dataset.l); },
+  'conta-remover': function (b) {
+    var c = contaPor(b.dataset.l);
+    if (confirm('Excluir ' + c.descricao + '?')) chamar('conta.remover', { linha: c._linha, descricao: c.descricao }, 'Conta excluída.');
+  }
+};
+
+document.addEventListener('click', function (e) {
+  if (e.target.id === 'fundo') return fecharFolha();
+  var b = e.target.closest('[data-a]');
+  if (b && FN[b.dataset.a]) { e.preventDefault(); FN[b.dataset.a](b); }
+});
+document.addEventListener('submit', function (e) {
+  e.preventDefault();
+  if (FORM) FORM(dadosForm());
+});
+document.addEventListener('input', function (e) {
+  if (e.target.hasAttribute('data-busca')) {
+    BUSCA = e.target.value;
+    desenhar();
+    var c = document.querySelector('[data-busca]');
+    c.focus(); c.setSelectionRange(c.value.length, c.value.length);
+  }
+});
+document.addEventListener('change', function (e) {
+  if (e.target.hasAttribute('data-c')) {
+    var it = porId(E.itens, e.target.value), r = porId(E.receitas, e.target.value);
+    var u = e.target.closest('.fl').querySelector('[data-u]');
+    if (it) u.value = it.unidade_padrao;
+    if (r) u.value = r.unidade;
+  }
+  if (e.target.hasAttribute('data-ci')) e.target.closest('.cl').classList.toggle('off', !e.target.value);
+});
+
+function ir(t) { TELA = t; BUSCA = ''; desenhar(); window.scrollTo(0, 0); }
+var TELAS = { inicio: tInicio, cardapio: tCardapio, receitas: tReceitas, compras: tCompras, estoque: tEstoque, contas: tContas };
+function desenhar() {
+  document.getElementById('app').innerHTML = TELAS[TELA]();
+  document.getElementById('menu').innerHTML = MENU.map(function (m) {
+    return '<button class="' + (m[0] === TELA ? 'on' : '') + '" data-a="ir" data-tela="' + m[0] + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + ICONES[m[0]] + '</svg>' + m[1] + '</button>';
+  }).join('');
+}
+
+function iniciar() {
+  if (!chaveApp()) { telaChave(); return; }
+  carregando(true);
+  servidor('estado', {}, function (e) { E = e; carregando(false); desenhar(); }, function (err) {
+    carregando(false);
+    document.getElementById('app').innerHTML = '<div class="nota">Não consegui abrir: ' + esc(err.message || err) + '</div>';
+  });
+}
+iniciar();
+</script>
+</body>
+</html>
